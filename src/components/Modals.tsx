@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface ModalsProps {
   isRegisterOpen: boolean;
@@ -9,50 +9,12 @@ interface ModalsProps {
   onCloseExpo: () => void;
 }
 
-type College = "SJCET" | "Non-SJCET";
-type Year = "1st" | "2nd" | "3rd" | "4th";
-type RegStep = "select" | "sjcet-1st-notice";
-
-const SNAPTICKS_URL = "https://discover.snaptiqz.com/event/synora";
-
-function redirectToSnapticks() {
-  window.open(SNAPTICKS_URL, "_blank", "noopener,noreferrer");
-}
-
 export default function Modals({
   isRegisterOpen,
   isExpoOpen,
   onCloseRegister,
   onCloseExpo,
 }: ModalsProps) {
-  // ── Registration modal state ──────────────────────────────────────────────
-  const [regStep, setRegStep] = useState<RegStep>("select");
-  const [college, setCollege] = useState<College | null>(null);
-  const [year, setYear] = useState<Year | null>(null);
-  const [agreed, setAgreed] = useState(false);
-
-  // Reset all state when the modal is closed
-  useEffect(() => {
-    if (!isRegisterOpen) {
-      setRegStep("select");
-      setCollege(null);
-      setYear(null);
-      setAgreed(false);
-    }
-  }, [isRegisterOpen]);
-
-  // ── Routing logic ─────────────────────────────────────────────────────────
-  function handleContinue() {
-    if (!college || !year) return;
-    // Path A: SJCET + 1st Year → notice (no payment)
-    if (college === "SJCET" && year === "1st") {
-      setRegStep("sjcet-1st-notice");
-    } else {
-      // Path B: every other combination → direct SnapTicks redirect
-      redirectToSnapticks();
-    }
-  }
-
   // ── Project Expo modal state ──────────────────────────────────────────────
   const [expoSubmitted, setExpoSubmitted] = useState(false);
   const [expoForm, setExpoForm] = useState({
@@ -67,12 +29,10 @@ export default function Modals({
     setExpoSubmitted(true);
   };
 
-  const canContinue = college !== null && year !== null;
-
   return (
     <>
       {/* ═══════════════════════════════════════════════════════════════════
-          REGISTRATION MODAL
+          REGISTRATION MODAL — Registrations Closed
       ════════════════════════════════════════════════════════════════════ */}
       {isRegisterOpen && (
         <div
@@ -82,232 +42,65 @@ export default function Modals({
           aria-label="Registration modal"
         >
           <div className="relative w-full max-w-sm sm:max-w-md bg-[#1F0E05] rounded-3xl shadow-2xl border-2 border-[#B85D2A]/30 max-h-[calc(100dvh-2rem)] overflow-y-auto">
+            <div className="p-5 sm:p-8">
+              {/* Close Button */}
+              <button
+                onClick={onCloseRegister}
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-[#FAF6F0] flex items-center justify-center text-sm transition-colors cursor-pointer z-10"
+                aria-label="Close registration modal"
+              >
+                ✕
+              </button>
 
-            {/* ── STEP 1: SELECTION ── */}
-            {regStep === "select" && (
-              <div className="p-5 sm:p-8">
-                {/* Close Button */}
-                <button
-                  onClick={onCloseRegister}
-                  className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-[#FAF6F0] flex items-center justify-center text-sm transition-colors cursor-pointer z-10"
-                  aria-label="Close registration modal"
-                >
-                  ✕
-                </button>
+              {/* Badge */}
+              <div className="flex justify-center mb-4">
+                <span className="inline-flex items-center gap-1.5 bg-[#B85D2A]/20 text-[#E8C5A8] border border-[#B85D2A]/30 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+                  SYNORA 2026 · Registration
+                </span>
+              </div>
 
-                {/* Icon */}
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#B85D2A]/20 border border-[#B85D2A]/30 flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#E8C5A8]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
+              {/* Icon */}
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#B85D2A]/20 border border-[#B85D2A]/30 flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#E8C5A8]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+
+              <h3 className="font-heading font-black text-xl sm:text-2xl text-[#FAF6F0] uppercase tracking-tight text-center leading-tight mb-1">
+                Registrations
+              </h3>
+              <h3 className="font-heading font-black text-xl sm:text-2xl text-[#E8C5A8] uppercase tracking-tight text-center leading-tight mb-5">
+                Closed
+              </h3>
+
+              {/* Notice Card */}
+              <div className="bg-[#2B1408] border border-[#B85D2A]/30 rounded-2xl px-5 py-5 mb-6 space-y-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-2 h-2 rounded-full bg-[#E8C5A8] animate-pulse shrink-0" />
+                  <p className="text-[10px] font-mono uppercase tracking-widest text-[#E8C5A8]/70">Important Notice</p>
                 </div>
-
-                {/* Badge */}
-                <div className="flex justify-center mb-3">
-                  <span className="inline-flex items-center gap-1.5 bg-[#B85D2A]/20 text-[#E8C5A8] border border-[#B85D2A]/30 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
-                    SYNORA 2026 · Registration
-                  </span>
-                </div>
-
-                <h3 className="font-heading font-black text-xl sm:text-2xl text-[#FAF6F0] uppercase tracking-tight text-center leading-tight mb-1">
-                  Register for
-                </h3>
-                <h3 className="font-heading font-black text-xl sm:text-2xl text-[#E8C5A8] uppercase tracking-tight text-center leading-tight mb-3">
-                  SYNORA 2026
-                </h3>
-                <p className="text-xs sm:text-sm text-[#A88C78] text-center leading-relaxed mb-5">
-                  Select your college and year of study to get started.
+                <p className="text-sm text-[#FAF6F0]/90 leading-relaxed">
+                  Registration for{" "}
+                  <span className="text-[#E8C5A8] font-semibold">SYNORA 2026</span>{" "}
+                  is now closed. Thank you for the overwhelming response.
                 </p>
-
-
-                {/* ── Field A: College ── */}
-                <div
-                  className="mb-4"
-                  role="group"
-                  aria-labelledby="college-group-label"
-                >
-                  <p
-                    id="college-group-label"
-                    className="text-[10px] text-[#E8C5A8]/60 font-mono uppercase tracking-widest mb-2 text-center"
-                  >
-                    College
-                  </p>
-                  <div className="grid grid-cols-2 gap-2.5">
-                    {(["SJCET", "Non-SJCET"] as College[]).map((c) => {
-                      const selected = college === c;
-                      return (
-                        <button
-                          key={c}
-                          onClick={() => setCollege(c)}
-                          aria-pressed={selected}
-                          className={`relative rounded-2xl border-2 px-3 py-3.5 flex flex-col items-center gap-1 transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E8C5A8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1F0E05] ${
-                            selected
-                              ? "border-[#B85D2A] bg-[#B85D2A]/15 shadow-[0_0_16px_rgba(184,93,42,0.3)]"
-                              : "border-[#B85D2A]/25 bg-[#3E1C0D]/60 hover:border-[#B85D2A]/60 hover:bg-[#B85D2A]/10"
-                          }`}
-                        >
-                          {/* Selected dot indicator */}
-                          <span
-                            className={`absolute top-2 right-2 w-2 h-2 rounded-full transition-colors ${
-                              selected ? "bg-[#E8C5A8]" : "bg-white/10"
-                            }`}
-                          />
-                          <svg
-                            className={`w-5 h-5 transition-colors ${selected ? "text-[#E8C5A8]" : "text-[#A88C78]"}`}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                          </svg>
-                          <span
-                            className={`font-heading font-black text-xs uppercase tracking-wide transition-colors ${
-                              selected ? "text-[#FAF6F0]" : "text-[#A88C78]"
-                            }`}
-                          >
-                            {c}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* ── Field B: Year of Study ── */}
-                <div
-                  className="mb-5"
-                  role="group"
-                  aria-labelledby="year-group-label"
-                >
-                  <p
-                    id="year-group-label"
-                    className="text-[10px] text-[#E8C5A8]/60 font-mono uppercase tracking-widest mb-2 text-center"
-                  >
-                    Year of Study
-                  </p>
-                  <div className="grid grid-cols-4 gap-2">
-                    {(["1st", "2nd", "3rd", "4th"] as Year[]).map((y) => {
-                      const selected = year === y;
-                      return (
-                        <button
-                          key={y}
-                          onClick={() => setYear(y)}
-                          aria-pressed={selected}
-                          className={`rounded-xl border-2 py-2.5 text-xs font-heading font-black uppercase tracking-wide transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E8C5A8] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1F0E05] ${
-                            selected
-                              ? "border-[#B85D2A] bg-[#B85D2A]/15 text-[#FAF6F0] shadow-[0_0_12px_rgba(184,93,42,0.25)]"
-                              : "border-[#B85D2A]/25 bg-[#3E1C0D]/60 text-[#A88C78] hover:border-[#B85D2A]/60 hover:text-[#FAF6F0] hover:bg-[#B85D2A]/10"
-                          }`}
-                        >
-                          {y}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Continue Button */}
-                <button
-                  onClick={handleContinue}
-                  disabled={!canContinue}
-                  aria-disabled={!canContinue}
-                  className={`w-full font-heading font-black py-2.5 sm:py-3 rounded-full text-xs sm:text-sm uppercase tracking-wider border-2 transition-all ${
-                    canContinue
-                      ? "bg-[#E8C5A8] hover:bg-[#DDB896] text-[#2B1408] border-[#2B1408] active:scale-95 cursor-pointer shadow-[0_0_20px_rgba(232,197,168,0.2)]"
-                      : "bg-[#E8C5A8]/20 text-[#A88C78] border-[#A88C78]/20 cursor-not-allowed"
-                  }`}
-                >
-                  Continue →
-                </button>
-
-                {/* Event detail chip */}
-                <p className="mt-4 text-center text-[10px] text-[#A88C78]/60 font-mono uppercase tracking-wider">
-                  Oct 30–31, 2026 · SJCET Palai, Kottayam
+                <p className="text-sm text-[#FAF6F0]/90 leading-relaxed">
+                  Stay tuned to our channels for further updates and event details.
                 </p>
               </div>
-            )}
 
-            {/* ── STEP 2: SJCET 1st-Year Notice (no payment) ── */}
-            {regStep === "sjcet-1st-notice" && (
-              <div className="p-5 sm:p-8">
-                {/* Close Button */}
-                <button
-                  onClick={onCloseRegister}
-                  className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-[#FAF6F0] flex items-center justify-center text-sm transition-colors cursor-pointer z-10"
-                  aria-label="Close registration modal"
-                >
-                  ✕
-                </button>
+              {/* Close / Acknowledged button */}
+              <button
+                onClick={onCloseRegister}
+                className="w-full font-heading font-black py-2.5 sm:py-3 rounded-full text-xs sm:text-sm uppercase tracking-wider border-2 bg-[#E8C5A8] hover:bg-[#DDB896] text-[#2B1408] border-[#2B1408] active:scale-95 cursor-pointer shadow-[0_0_20px_rgba(232,197,168,0.2)] transition-all"
+              >
+                Got It
+              </button>
 
-                {/* Back Button */}
-                <button
-                  onClick={() => setRegStep("select")}
-                  className="flex items-center gap-1.5 text-[#A88C78] hover:text-[#E8C5A8] text-xs font-semibold transition-colors mb-5 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E8C5A8] rounded"
-                  aria-label="Back to college and year selection"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Back
-                </button>
-
-                {/* Badge */}
-                <div className="flex justify-center mb-4">
-                  <span className="inline-flex items-center gap-1.5 bg-[#B85D2A]/20 text-[#E8C5A8] border border-[#B85D2A]/30 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
-                    SJCET · 1st Year
-                  </span>
-                </div>
-
-                {/* Icon */}
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#B85D2A]/20 border border-[#B85D2A]/30 flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-6 h-6 sm:w-7 sm:h-7 text-[#E8C5A8]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-
-                <h3 className="font-heading font-black text-xl sm:text-2xl text-[#FAF6F0] uppercase tracking-tight text-center leading-tight mb-1">
-                  Registration
-                </h3>
-                <h3 className="font-heading font-black text-xl sm:text-2xl text-[#E8C5A8] uppercase tracking-tight text-center leading-tight mb-5">
-                  Closed
-                </h3>
-
-                {/* Notice Card */}
-                <div className="bg-[#2B1408] border border-[#B85D2A]/30 rounded-2xl px-5 py-5 mb-6 space-y-3">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-[#E8C5A8] animate-pulse shrink-0" />
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-[#E8C5A8]/70">Important Notice</p>
-                  </div>
-                  <p className="text-sm text-[#FAF6F0]/90 leading-relaxed">
-                    As part of the permission process, a{" "}
-                    <span className="text-[#E8C5A8] font-semibold">Google Form</span>{" "}
-                    to collect first-year students&#39; details will be shared in your class groups through our{" "}
-                    <span className="text-[#E8C5A8] font-semibold">Student Branch Ambassadors</span>. Please fill out the form as soon as possible, as it will close shortly.
-                  </p>
-                  <p className="text-sm text-[#FAF6F0]/90 leading-relaxed">
-                    Based on the responses, we will seek permission from the{" "}
-                    <span className="text-[#E8C5A8] font-semibold">HODs and the Principal</span>.
-                    Registration for first-year students will begin{" "}
-                    <span className="text-[#E8C5A8] font-semibold">tomorrow</span>, and only students who receive the necessary permission will be allowed to register for{" "}
-                    <span className="text-[#E8C5A8] font-semibold">SYNORA 2026</span>.
-                  </p>
-                </div>
-
-                {/* Close / Acknowledged button */}
-                <button
-                  onClick={onCloseRegister}
-                  className="w-full font-heading font-black py-2.5 sm:py-3 rounded-full text-xs sm:text-sm uppercase tracking-wider border-2 bg-[#E8C5A8] hover:bg-[#DDB896] text-[#2B1408] border-[#2B1408] active:scale-95 cursor-pointer shadow-[0_0_20px_rgba(232,197,168,0.2)] transition-all"
-                >
-                  Got It
-                </button>
-
-                <p className="mt-4 text-center text-[10px] text-[#A88C78]/60 font-mono uppercase tracking-wider">
-                  Oct 30–31, 2026 · SJCET Palai, Kottayam
-                </p>
-              </div>
-            )}
-
+              <p className="mt-4 text-center text-[10px] text-[#A88C78]/60 font-mono uppercase tracking-wider">
+                Oct 30–31, 2026 · SJCET Palai, Kottayam
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -373,8 +166,8 @@ export default function Modals({
         </div>
       )}
 
-      {/* Suppress unused state warning for expo form (kept for future use) */}
-      {expoSubmitted && expoForm && agreed && null}
+      {/* Suppress unused warnings for expo form state (kept for future use) */}
+      {void [expoSubmitted, expoForm, setExpoForm, handleExpoSubmit]}
     </>
   );
 }
